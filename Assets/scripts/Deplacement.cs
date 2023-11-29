@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Deplacement : MonoBehaviour
 {
-    public float vitesse;
+    public float vitesseD;
     float forceDeplacement;
 
     public float vitesseTourne;
@@ -30,7 +30,6 @@ public class Deplacement : MonoBehaviour
     //voir si le joueur est en collision avec la lumiere
     private bool zoneJoueurLumiere = false;
 
-    
 
     // Start is called before the first frame update
     void Start()
@@ -41,20 +40,21 @@ public class Deplacement : MonoBehaviour
 
     void FixedUpdate()
     {
-        GetComponent<Rigidbody>().AddRelativeForce(0f, 0f, forceDeplacement, ForceMode.VelocityChange);
+        GetComponent<Rigidbody>().AddRelativeForce(0f, 0f, forceDeplacement, ForceMode.Force);
     }
 
     // Update is called once per frame
     void Update()
     {
-                                                                                                                                       
-        forceDeplacement = Input.GetAxis("Vertical") * vitesse;
-        GetComponent<Animator>().SetBool("marche", true);
+        forceDeplacement = Input.GetAxis("Vertical") * vitesseD;
+        // GetComponent<Animator>().SetBool("marche", true);
+        GetComponent<Animator>().SetFloat("vitesse", GetComponent<Rigidbody>().velocity.magnitude);
+
 
         float valeurTourne = Input.GetAxis("Mouse X") * vitesseTourne;
         transform.Rotate(0f, valeurTourne, 0f);
 
-        if (Input.GetKeyDown(KeyCode.E) && zoneJoueurLumiere)
+        if (Input.GetKeyDown(KeyCode.E) && zoneJoueurLumiere == true)
         {
             // perso interragi avec la lumiere
             InteractionObj();
@@ -102,7 +102,7 @@ public class Deplacement : MonoBehaviour
             allumeB.SetActive(true);
             fermeB2.SetActive(false);
             allumeB2.SetActive(true);
-            //
+
             //camera 2 s'active
             CamLight.SetActive(true);
             //et se désactive après 4s
@@ -116,7 +116,7 @@ public class Deplacement : MonoBehaviour
             // si fermeA et fermeB sont désactivé
             if (!fermeA.activeSelf && !fermeB.activeSelf)
             {
-                // et si porte is not null, on sortir
+                // et si porte is not null, on peut sortir
                 if (porte != null)
                 {
                     porte.SetActive(true);

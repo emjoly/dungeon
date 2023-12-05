@@ -28,7 +28,8 @@ public class Deplacement : MonoBehaviour
     private bool hasKey = false;
 
     //voir si le joueur est en collision avec la lumiere
-    private bool zoneJoueurLumiere = false;
+    private bool zoneJoueurLumiereA = false;
+    private bool zoneJoueurLumiereB = false;
 
 
     // Start is called before the first frame update
@@ -54,10 +55,15 @@ public class Deplacement : MonoBehaviour
         float valeurTourne = Input.GetAxis("Mouse X") * vitesseTourne;
         transform.Rotate(0f, valeurTourne, 0f);
 
-        if (Input.GetKeyDown(KeyCode.E) && zoneJoueurLumiere == true)
+        if (Input.GetKeyDown(KeyCode.E) && zoneJoueurLumiereA == true)
         {
             // perso interragi avec la lumiere
-            InteractionObj();
+            InteractionObjA();
+        }
+        if (Input.GetKeyDown(KeyCode.E) && zoneJoueurLumiereB == true)
+        {
+            // perso interragi avec la lumiere
+            InteractionObjB();
         }
     }
 
@@ -65,20 +71,42 @@ public class Deplacement : MonoBehaviour
     {
         if (infoCollider.gameObject.name == "cle")
         {
+            // détruire clé
             Destroy(infoCollider.gameObject);
-            //camera s'active et se désactive après 4s
+            //camera s'active
             CamLight.SetActive(true);
+            //et se désactive après 4s
+            Invoke("SwitchCam", 4f);
             //GetComponent<AudioSource>().PlayOneShot(cleSon);
+            hasKey = true;
+
+            // si le joueur a la clé et // si fermeA et fermeB sont désactivé (le joueur a allumé les 2 lumieres)
+            if (hasKey && !fermeA.activeSelf && !fermeB.activeSelf)
+            {
+                // on enleve le collider de la porte ou mettre dans un empty pour changer le pivot et louvrir
+                Destroy(porte.GetComponent<Collider>();
+            }
+
+            else
+            {
+                // sinon, le joueur doit ramasser la cle
+                RamasseCle();
+            }
         }
 
         // verifier si joueur est en collision
-        if (infoCollider.gameObject == gameObject)
+        if (infoCollider.gameObject.tag == "lumiereA")
         {
-            zoneJoueurLumiere = true;
+            zoneJoueurLumiereA = true;
+        }
+        // verifier si joueur est en collision
+        if (infoCollider.gameObject.tag == "lumiereB")
+        {
+            zoneJoueurLumiereB = true;
         }
     }
 
-    void InteractionObj()
+    void InteractionObjA()
     {
         // verifier si la lumiere est bien ferme
         if (fermeA != null && fermeA.activeSelf)
@@ -94,7 +122,10 @@ public class Deplacement : MonoBehaviour
             Invoke("SwitchCam", 4f);
             //GetComponent<AudioSource>().PlayOneShot(lumSon);
         }
+    }
 
+    void InteractionObjB()
+    {
         if (fermeB != null && fermeB.activeSelf)
         {
             // désactiver les lumieres fermées et activer celles ouvertes
@@ -102,32 +133,11 @@ public class Deplacement : MonoBehaviour
             allumeB.SetActive(true);
             fermeB2.SetActive(false);
             allumeB2.SetActive(true);
-
             //camera 2 s'active
             CamLight.SetActive(true);
             //et se désactive après 4s
             Invoke("SwitchCam", 4f);
             //GetComponent<AudioSource>().PlayOneShot(lumSon);
-        }
-
-        // Check if the player has the key
-        if (hasKey)
-        {
-            // si fermeA et fermeB sont désactivé
-            if (!fermeA.activeSelf && !fermeB.activeSelf)
-            {
-                // et si porte is not null, on peut sortir
-                if (porte != null)
-                {
-                    porte.SetActive(true);
-                }
-            }
-        }
-
-        else
-        {
-            // sinon, le joueur doit ramasser la cle
-            RamasseCle();
         }
     }
 
